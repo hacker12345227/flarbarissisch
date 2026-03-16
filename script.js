@@ -23,24 +23,12 @@ return text
 
 }
 
-function translateNLtoFlar(words){
-
-return words.map(word => dictionary[word] || word)
-
-}
-
-function translateFlartoNL(words){
-
-return words.map(word => reverseDictionary[word] || word)
-
-}
-
 function translate(){
 
 let input = normalize(document.getElementById("input").value)
 
 if(input.trim() === ""){
-document.getElementById("liveOutput").innerText = ""
+document.getElementById("output").value = ""
 return
 }
 
@@ -49,13 +37,17 @@ let words = input.split(/\s+/)
 let result
 
 if(mode === "nl-flar"){
-result = translateNLtoFlar(words)
+
+result = words.map(word => dictionary[word] || word)
+
 }
 else{
-result = translateFlartoNL(words)
+
+result = words.map(word => reverseDictionary[word] || word)
+
 }
 
-document.getElementById("liveOutput").innerText = result.join(" ")
+document.getElementById("output").value = result.join(" ")
 
 }
 
