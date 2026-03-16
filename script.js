@@ -1,266 +1,154 @@
-let dictionary = {}
-let reverseDictionary = {}
+let dictionary={}
+let reverseDictionary={}
 
-let mode = "nl-flar"
+let mode="nl-flar"
 
-const input = document.getElementById("input")
-const output = document.getElementById("output")
-const autocomplete = document.getElementById("autocomplete")
-const copyBtn = document.getElementById("copyBtn")
-
-/* dictionary laden */
+const input=document.getElementById("input")
+const output=document.getElementById("output")
 
 fetch("dictionary.json")
-.then(res => res.json())
-.then(data => {
+.then(res=>res.json())
+.then(data=>{
 
-dictionary = data
+dictionary=data
 
 for(let key in dictionary){
-reverseDictionary[dictionary[key]] = key
+reverseDictionary[dictionary[key]]=key
 }
 
 })
-
-/* tekst normaliseren */
 
 function normalize(text){
 
-return text
-.toLowerCase()
-.replace(/[.,!?]/g,"")
+return text.toLowerCase().replace(/[.,!?]/g,"")
 
 }
-
-/* vertalen */
 
 function translate(){
 
-let words = normalize(input.value).split(/\s+/)
+let words=normalize(input.value).split(/\s+/)
 
 let result
 
-if(mode === "nl-flar"){
-result = words.map(w => dictionary[w] || w)
+if(mode==="nl-flar"){
+result=words.map(w=>dictionary[w]||w)
 }else{
-result = words.map(w => reverseDictionary[w] || w)
+result=words.map(w=>reverseDictionary[w]||w)
 }
 
-output.value = result.join(" ")
-
-showAutocomplete(words[words.length-1])
-
-}
-
-input.addEventListener("input", translate)
-
-/* autocomplete */
-
-function showAutocomplete(part){
-
-autocomplete.innerHTML=""
-
-if(!part) return
-
-let keys = Object.keys(dictionary)
-
-let matches = keys.filter(w => w.startsWith(part)).slice(0,5)
-
-if(matches.length === 0) return
-
-autocomplete.classList.add("show")
-
-matches.forEach(word => {
-
-let div = document.createElement("div")
-
-div.className = "autocomplete-item"
-div.innerText = word
-
-div.onclick = () => {
-
-let words = input.value.split(/\s+/)
-words[words.length-1] = word
-
-input.value = words.join(" ")
-
-autocomplete.classList.remove("show")
-
-translate()
+output.value=result.join(" ")
 
 }
 
-autocomplete.appendChild(div)
+input.addEventListener("input",translate)
 
-})
+document.getElementById("switchBtn").onclick=()=>{
 
-}
-
-document.addEventListener("click",e => {
-
-if(!autocomplete.contains(e.target) && e.target !== input){
-autocomplete.classList.remove("show")
-}
-
-})
-
-/* switch knop */
-
-document.getElementById("switchBtn").addEventListener("click",()=>{
-
-let btn = document.getElementById("switchBtn")
+let btn=document.getElementById("switchBtn")
 
 btn.classList.add("rotate")
+
 setTimeout(()=>btn.classList.remove("rotate"),300)
 
 if(mode==="nl-flar"){
 
 mode="flar-nl"
 
-document.getElementById("langLeft").innerText="Flarbarissisch"
-document.getElementById("langRight").innerText="Nederlands"
+langLeft.innerText="Flarbarissisch"
+langRight.innerText="Nederlands"
 
 }else{
 
 mode="nl-flar"
 
-document.getElementById("langLeft").innerText="Nederlands"
-document.getElementById("langRight").innerText="Flarbarissisch"
+langLeft.innerText="Nederlands"
+langRight.innerText="Flarbarissisch"
 
 }
 
 translate()
 
-})
+}
 
-/* copy knop met animatie */
+/* copy animatie */
 
-copyBtn.addEventListener("click",()=>{
+copyBtn.onclick=()=>{
 
-let text = output.value
+navigator.clipboard.writeText(output.value)
 
-if(!text) return
-
-navigator.clipboard.writeText(text)
-
-copyBtn.innerText = "✅ Gekopieerd"
-
+copyBtn.innerText="✅ Gekopieerd"
 copyBtn.classList.add("copied")
 
 setTimeout(()=>{
 
-copyBtn.innerText = "📋 Copy"
+copyBtn.innerText="📋 Copy"
 copyBtn.classList.remove("copied")
 
 },1500)
 
-})
+}
 
 /* dark mode */
 
-const themeToggle = document.getElementById("themeToggle")
+const themeToggle=document.getElementById("themeToggle")
 
-function setTheme(theme){
+themeToggle.onclick=()=>{
 
-document.documentElement.setAttribute("data-theme",theme)
+let current=document.documentElement.getAttribute("data-theme")
 
-localStorage.setItem("theme",theme)
-
-themeToggle.innerText = theme==="dark" ? "☀️" : "🌙"
+document.documentElement.setAttribute("data-theme",current==="dark"?"light":"dark")
 
 }
 
-const savedTheme = localStorage.getItem("theme")
+/* flarbarissisch uitspraakregels */
 
-if(savedTheme){
-setTheme(savedTheme)
-}else{
-setTheme("light")
-}
+function flarPronounce(text){
 
-themeToggle.addEventListener("click",()=>{
+return text
 
-const current = document.documentElement.getAttribute("data-theme")
-
-setTheme(current==="dark" ? "light":"dark")
-
-})
-
-/* spraak */
-
-let voices = []
-
-const voiceSelect = document.getElementById("voiceSelect")
-
-function loadVoices(){
-
-let allVoices = speechSynthesis.getVoices()
-
-/* alleen nederlandse stemmen */
-
-let nlVoices = allVoices.filter(v => v.lang.startsWith("nl"))
-
-/* man en vrouw detectie */
-
-let male = nlVoices.find(v => v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("david"))
-let female = nlVoices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira"))
-
-voices = []
-
-voiceSelect.innerHTML = ""
-
-if(male){
-
-voices.push(male)
-
-let option = document.createElement("option")
-option.value = 0
-option.textContent = "Man"
-
-voiceSelect.appendChild(option)
+.replace(/zl/g,"zul")
+.replace(/fl/g,"fla")
+.replace(/kr/g,"kru")
 
 }
 
-if(female){
-
-voices.push(female)
-
-let option = document.createElement("option")
-option.value = voices.length-1
-option.textContent = "Vrouw"
-
-voiceSelect.appendChild(option)
-
-}
-
-}
-
-speechSynthesis.onvoiceschanged = loadVoices
+/* speech + highlight */
 
 function speak(text){
 
-if(!text) return
+if(!text)return
 
-let utter = new SpeechSynthesisUtterance(text)
+let words=text.split(" ")
 
-let voiceIndex = voiceSelect.value
+let i=0
 
-if(voices[voiceIndex]){
-utter.voice = voices[voiceIndex]
+function speakWord(){
+
+if(i>=words.length)return
+
+let utter=new SpeechSynthesisUtterance(flarPronounce(words[i]))
+
+utter.lang="nl-NL"
+
+utter.onend=()=>{
+
+i++
+speakWord()
+
 }
-
-utter.lang = "nl-NL"
 
 speechSynthesis.speak(utter)
 
 }
 
-/* luister knoppen */
+speakWord()
 
-document.getElementById("speakInputBtn").addEventListener("click",()=>{
+}
+
+document.getElementById("speakInputBtn").onclick=()=>{
 speak(input.value)
-})
+}
 
-document.getElementById("speakOutputBtn").addEventListener("click",()=>{
+document.getElementById("speakOutputBtn").onclick=()=>{
 speak(output.value)
-})
+}
