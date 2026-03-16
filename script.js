@@ -181,3 +181,20 @@ const current=document.documentElement.getAttribute("data-theme")
 setTheme(current==="dark" ? "light" : "dark")
 
 })
+
+
+document.getElementById("speakBtn").addEventListener("click",()=>{
+
+let text=document.getElementById("output").value
+
+if(!text) return
+
+let speech=new SpeechSynthesisUtterance(text)
+
+speech.lang="en-US"   // beste voor fantasy talen
+speech.rate=0.9
+speech.pitch=1
+
+speechSynthesis.speak(speech)
+
+})
