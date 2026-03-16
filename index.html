@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flarbarissisch Translator</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<div class="app">
+<div class="translator">
 
-<h1>🌸 Flarbarissisch Translator</h1>
+<div class="topbar">
 
-<textarea id="input"></textarea>
+<span id="langLeft">Nederlands</span>
 
-<div class="controls">
-<button onclick="translateToFlar()">NL → Flarbarissisch</button>
-<button onclick="translateToDutch()">Flarbarissisch → NL</button>
+<button id="switchBtn">⇄</button>
+
+<span id="langRight">Flarbarissisch</span>
+
 </div>
 
-<textarea id="output" readonly></textarea>
+<textarea id="input" placeholder="Typ tekst..."></textarea>
+
+<textarea id="output" placeholder="Vertaling..." readonly></textarea>
 
 </div>
 
