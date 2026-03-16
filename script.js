@@ -1,72 +1,79 @@
-/* ===================== */
-/* DATA */
-/* ===================== */
+let dictionary={}
+let reverseDictionary={}
 
-let dictionary = {}
-let reverseDictionary = {}
+let mode="nl-flar"
 
-let mode = "nl-flar"
+const input=document.getElementById("input")
+const output=document.getElementById("output")
 
-const input = document.getElementById("input")
-const output = document.getElementById("output")
+const switchBtn=document.getElementById("switchBtn")
+const langLeft=document.getElementById("langLeft")
+const langRight=document.getElementById("langRight")
 
-/* ===================== */
-/* LOAD DICTIONARY */
-/* ===================== */
+const copyBtn=document.getElementById("copyBtn")
+
+const themeToggle=document.getElementById("themeToggle")
+
+const speakInputBtn=document.getElementById("speakInputBtn")
+const speakOutputBtn=document.getElementById("speakOutputBtn")
 
 fetch("dictionary.json")
-.then(res => res.json())
-.then(data => {
+.then(res=>res.json())
+.then(data=>{
 
-dictionary = data
+dictionary=data
 
 for(let key in dictionary){
-reverseDictionary[dictionary[key]] = key
+reverseDictionary[dictionary[key]]=key
 }
 
 })
 
-/* ===================== */
-/* TRANSLATE */
-/* ===================== */
+function translateToken(token){
+
+let match=token.match(/^([^A-Za-z0-9]*)([A-Za-z0-9]+)([^A-Za-z0-9]*)$/)
+
+if(!match)return token
+
+let start=match[1]
+let word=match[2]
+let end=match[3]
+
+let lookup=word.toLowerCase()
+
+let translated=word
+
+if(mode==="nl-flar" && dictionary[lookup]){
+translated=dictionary[lookup]
+}
+
+if(mode==="flar-nl" && reverseDictionary[lookup]){
+translated=reverseDictionary[lookup]
+}
+
+return start+translated+end
+
+}
 
 function translate(){
 
-let text = input.value
+let parts=input.value.split(/(\s+)/)
 
-let parts = text.split(/(\s+)/)
+let result=parts.map(p=>{
 
-let result = parts.map(part => {
+if(/\s+/.test(p))return p
 
-let clean = part.toLowerCase().replace(/[.,!?]/g,"")
-
-if(mode==="nl-flar" && dictionary[clean]){
-
-return part.replace(clean, dictionary[clean])
-
-}
-
-if(mode==="flar-nl" && reverseDictionary[clean]){
-
-return part.replace(clean, reverseDictionary[clean])
-
-}
-
-return part
+return translateToken(p)
 
 })
 
-output.value = result.join("")
+output.value=result.join("")
 
 }
 
-input.addEventListener("input", translate)
+input.addEventListener("input",translate)
 
-/* ===================== */
-/* SWITCH */
-/* ===================== */
-
-switchBtn.onclick = () => {
+switchBtn.onclick=()=>{
 
 switchBtn.classList.add("rotate")
 
@@ -92,132 +99,57 @@ translate()
 
 }
 
-/* ===================== */
-/* COPY BUTTON */
-/* ===================== */
-
-copyBtn.onclick = () => {
+copyBtn.onclick=()=>{
 
 navigator.clipboard.writeText(output.value)
 
 copyBtn.innerText="✅ Gekopieerd"
+
 copyBtn.classList.add("copied")
 
 setTimeout(()=>{
 
 copyBtn.innerText="📋 Copy"
+
 copyBtn.classList.remove("copied")
 
 },1500)
 
 }
 
-/* ===================== */
-/* DARK MODE */
-/* ===================== */
-
-const themeToggle = document.getElementById("themeToggle")
-
-let savedTheme = localStorage.getItem("theme")
+let savedTheme=localStorage.getItem("theme")
 
 if(savedTheme){
-document.documentElement.setAttribute("data-theme", savedTheme)
+document.documentElement.setAttribute("data-theme",savedTheme)
 }
 
-themeToggle.onclick = () => {
+themeToggle.onclick=()=>{
 
-let current = document.documentElement.getAttribute("data-theme")
+let current=document.documentElement.getAttribute("data-theme")
 
-let newTheme = current==="dark" ? "light" : "dark"
+let newTheme=current==="dark"?"light":"dark"
 
-document.documentElement.setAttribute("data-theme", newTheme)
+document.documentElement.setAttribute("data-theme",newTheme)
 
-localStorage.setItem("theme", newTheme)
-
-}
-
-/* ===================== */
-/* VOICES */
-/* ===================== */
-
-let voices = []
-let maleVoice = null
-let femaleVoice = null
-let fallbackVoice = null
-
-function loadVoices(){
-
-let allVoices = speechSynthesis.getVoices()
-
-voices = allVoices.filter(v => v.lang.startsWith("nl"))
-
-fallbackVoice = voices[0] || allVoices[0]
-
-maleVoice = null
-femaleVoice = null
-
-voices.forEach(v => {
-
-let name = v.name.toLowerCase()
-
-if(!femaleVoice && (
-name.includes("female") ||
-name.includes("vrouw") ||
-name.includes("zira") ||
-name.includes("susan")
-)){
-femaleVoice = v
-}
-
-if(!maleVoice && (
-name.includes("male") ||
-name.includes("david") ||
-name.includes("mark")
-)){
-maleVoice = v
-}
-
-})
-
-if(!femaleVoice) femaleVoice = fallbackVoice
-if(!maleVoice) maleVoice = fallbackVoice
+localStorage.setItem("theme",newTheme)
 
 }
-
-speechSynthesis.onvoiceschanged = loadVoices
-loadVoices()
-
-/* ===================== */
-/* SPEAK */
-/* ===================== */
 
 function speak(text){
 
-if(!text) return
+if(!text)return
 
 speechSynthesis.cancel()
 
-let utter = new SpeechSynthesisUtterance(text)
+let utter=new SpeechSynthesisUtterance(text)
 
-let voiceType = document.getElementById("voiceSelect").value
+utter.lang="nl-NL"
 
-if(voiceType === "male"){
-utter.voice = maleVoice
-}else{
-utter.voice = femaleVoice
-}
-
-utter.lang = "nl-NL"
-utter.rate = 0.9
-utter.pitch = 1
+utter.rate=0.9
 
 speechSynthesis.speak(utter)
 
 }
 
-/* ===================== */
-/* SPEAK BUTTONS */
-/* ===================== */
-
-speakInputBtn.onclick = () => speak(input.value)
-speakOutputBtn.onclick = () => speak(output.value)
+speakInputBtn.onclick=()=>speak(input.value)
+speakOutputBtn.onclick=()=>speak(output.value)
