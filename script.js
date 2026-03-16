@@ -1,3 +1,7 @@
+/* ===================== */
+/* DATA */
+/* ===================== */
+
 let dictionary = {}
 let reverseDictionary = {}
 
@@ -7,7 +11,7 @@ const input = document.getElementById("input")
 const output = document.getElementById("output")
 
 /* ===================== */
-/* DICTIONARY */
+/* LOAD DICTIONARY */
 /* ===================== */
 
 fetch("dictionary.json")
@@ -22,23 +26,37 @@ reverseDictionary[dictionary[key]] = key
 
 })
 
-function normalize(text){
-return text.toLowerCase().replace(/[.,!?]/g,"")
-}
+/* ===================== */
+/* TRANSLATE */
+/* ===================== */
 
 function translate(){
 
-let words = normalize(input.value).split(/\s+/)
+let text = input.value
 
-let result
+let parts = text.split(/(\s+)/)
 
-if(mode==="nl-flar"){
-result = words.map(w => dictionary[w] || w)
-}else{
-result = words.map(w => reverseDictionary[w] || w)
+let result = parts.map(part => {
+
+let clean = part.toLowerCase().replace(/[.,!?]/g,"")
+
+if(mode==="nl-flar" && dictionary[clean]){
+
+return part.replace(clean, dictionary[clean])
+
 }
 
-output.value = result.join(" ")
+if(mode==="flar-nl" && reverseDictionary[clean]){
+
+return part.replace(clean, reverseDictionary[clean])
+
+}
+
+return part
+
+})
+
+output.value = result.join("")
 
 }
 
@@ -75,14 +93,14 @@ translate()
 }
 
 /* ===================== */
-/* COPY */
+/* COPY BUTTON */
 /* ===================== */
 
 copyBtn.onclick = () => {
 
 navigator.clipboard.writeText(output.value)
 
-copyBtn.innerText = "✅ Gekopieerd"
+copyBtn.innerText="✅ Gekopieerd"
 copyBtn.classList.add("copied")
 
 setTimeout(()=>{
@@ -98,22 +116,24 @@ copyBtn.classList.remove("copied")
 /* DARK MODE */
 /* ===================== */
 
-themeToggle.onclick = () => {
-
-let current = document.documentElement.getAttribute("data-theme")
-
-let newTheme = current === "dark" ? "light" : "dark"
-
-document.documentElement.setAttribute("data-theme", newTheme)
-
-localStorage.setItem("theme", newTheme)
-
-}
+const themeToggle = document.getElementById("themeToggle")
 
 let savedTheme = localStorage.getItem("theme")
 
 if(savedTheme){
 document.documentElement.setAttribute("data-theme", savedTheme)
+}
+
+themeToggle.onclick = () => {
+
+let current = document.documentElement.getAttribute("data-theme")
+
+let newTheme = current==="dark" ? "light" : "dark"
+
+document.documentElement.setAttribute("data-theme", newTheme)
+
+localStorage.setItem("theme", newTheme)
+
 }
 
 /* ===================== */
@@ -129,15 +149,9 @@ function loadVoices(){
 
 let allVoices = speechSynthesis.getVoices()
 
-/* alleen NL stemmen */
-
 voices = allVoices.filter(v => v.lang.startsWith("nl"))
 
-/* fallback */
-
 fallbackVoice = voices[0] || allVoices[0]
-
-/* reset */
 
 maleVoice = null
 femaleVoice = null
@@ -147,8 +161,8 @@ voices.forEach(v => {
 let name = v.name.toLowerCase()
 
 if(!femaleVoice && (
-name.includes("vrouw") ||
 name.includes("female") ||
+name.includes("vrouw") ||
 name.includes("zira") ||
 name.includes("susan")
 )){
@@ -165,15 +179,12 @@ maleVoice = v
 
 })
 
-/* fallback logic */
-
 if(!femaleVoice) femaleVoice = fallbackVoice
 if(!maleVoice) maleVoice = fallbackVoice
 
 }
 
 speechSynthesis.onvoiceschanged = loadVoices
-
 loadVoices()
 
 /* ===================== */
@@ -204,7 +215,9 @@ speechSynthesis.speak(utter)
 
 }
 
-/* buttons */
+/* ===================== */
+/* SPEAK BUTTONS */
+/* ===================== */
 
 speakInputBtn.onclick = () => speak(input.value)
 speakOutputBtn.onclick = () => speak(output.value)
