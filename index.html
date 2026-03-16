@@ -1,51 +1,46 @@
 <!DOCTYPE html>
 <html lang="nl">
-
 <head>
-<meta charset="UTF-8">
-<title>Flarbarissisch Translator</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flarbarissisch Translator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <main class="app">
+    <section class="card">
+      <h1>🌸 Flarbarissisch Translator</h1>
 
-<div class="translator">
+      <div class="toolbar">
+        <span id="langLeft" class="lang">Nederlands</span>
 
-<h1>🌸 Flarbarissisch Translator</h1>
+        <button id="switchBtn" class="switch-btn" type="button" aria-label="Wissel talen">
+          <span class="switch-icon">⇄</span>
+        </button>
 
-<div class="topbar">
+        <span id="langRight" class="lang">Flarbarissisch</span>
+      </div>
 
-<span id="langLeft">Nederlands</span>
+      <div class="panes" id="panes">
+        <div class="pane">
+          <label for="input" class="pane-label">Tekst</label>
+          <div class="input-wrap">
+            <textarea id="input" placeholder="Typ tekst..." spellcheck="false"></textarea>
+            <div id="autocomplete" class="autocomplete"></div>
+          </div>
+        </div>
 
-<button id="switchBtn">⇄</button>
+        <div class="pane">
+          <div class="output-top">
+            <label for="output" class="pane-label">Vertaling</label>
+            <button id="copyBtn" class="copy-btn" type="button">📋 Kopieer</button>
+          </div>
+          <textarea id="output" placeholder="Vertaling..." readonly></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<span id="langRight">Flarbarissisch</span>
-
-</div>
-
-<div class="boxes">
-
-<div class="box">
-
-<textarea id="input" placeholder="Typ tekst..."></textarea>
-
-<div id="autocomplete"></div>
-
-</div>
-
-<div class="box">
-
-<textarea id="output" readonly></textarea>
-
-<button id="copyBtn">📋 Copy</button>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
