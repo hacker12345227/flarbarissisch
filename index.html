@@ -1,70 +1,82 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Flarbarissisch Translator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png" />
-  <link rel="shortcut icon" href="./favicon.png" />
-  <link rel="apple-touch-icon" href="./favicon.png" />
+<title>Flarbarissisch Translator</title>
 
-  <meta name="description" content="Vertaal Nederlands naar Flarbarissisch en luister naar de uitspraak." />
+<link rel="icon" type="image/png" href="favicon.png">
 
-  <meta property="og:title" content="Flarbarissisch Translator" />
-  <meta property="og:description" content="Vertaal Nederlands naar Flarbarissisch en luister naar de uitspraak." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="./banner.png" />
-  <meta property="og:image:alt" content="Flarbarissisch Translator banner" />
+<meta name="description" content="Vertaal Nederlands naar Flarbarissisch">
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Flarbarissisch Translator" />
-  <meta name="twitter:description" content="Vertaal Nederlands naar Flarbarissisch en luister naar de uitspraak." />
-  <meta name="twitter:image" content="./banner.png" />
+<meta property="og:title" content="Flarbarissisch Translator">
+<meta property="og:description" content="Vertaal Nederlands naar Flarbarissisch">
+<meta property="og:type" content="website">
+<meta property="og:image" content="banner.png">
 
-  <link rel="stylesheet" href="style.css" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="banner.png">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-  <div class="app">
-    <div class="card">
-      <h1>🌸 Flarbarissisch Translator</h1>
 
-      <div class="toolbar">
-        <span id="langLeft" class="lang-label">Nederlands</span>
+<div class="app">
 
-        <button id="switchBtn" class="switch-btn" type="button" aria-label="Wissel talen">
-          ⇄
-        </button>
+<div class="card">
 
-        <span id="langRight" class="lang-label">Flarbarissisch</span>
+<h1>🌸 Flarbarissisch Translator</h1>
 
-        <button id="themeToggle" class="theme-btn" type="button" aria-label="Wissel thema">
-          🌙
-        </button>
-      </div>
+<div class="toolbar">
 
-      <div class="panes">
-        <div class="pane">
-          <textarea id="input" placeholder="Typ tekst..."></textarea>
+<span id="langLeft">Nederlands</span>
 
-          <div class="buttons">
-            <button id="speakInputBtn" class="speak-btn" type="button">🔊 Beluister</button>
-          </div>
-        </div>
+<button id="switchBtn" class="switch-btn">⇄</button>
 
-        <div class="pane">
-          <textarea id="output" readonly placeholder="Vertaling..."></textarea>
+<span id="langRight">Flarbarissisch</span>
 
-          <div class="buttons">
-            <button id="copyBtn" class="copy-btn" type="button">📋 Copy</button>
-            <button id="speakOutputBtn" class="speak-btn" type="button">🔊 Beluister</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<button id="themeToggle" class="theme-btn">🌙</button>
 
-  <script src="script.js"></script>
+</div>
+
+<div class="panes">
+
+<div class="pane">
+
+<textarea id="input" placeholder="Typ tekst..."></textarea>
+
+<div class="buttons">
+<button id="speakInputBtn" class="speak-btn">🔊 Beluister</button>
+</div>
+
+</div>
+
+<div class="pane">
+
+<textarea id="output" readonly placeholder="Vertaling..."></textarea>
+
+<div class="buttons">
+
+<button id="copyBtn" class="copy-btn">📋 Copy</button>
+
+<button id="speakOutputBtn" class="speak-btn">🔊 Beluister</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
