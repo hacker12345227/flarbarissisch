@@ -10,13 +10,40 @@ margin:0;
 
 }
 
-.app{
+.translator{
 
 background:white;
 padding:30px;
 border-radius:12px;
-width:700px;
-box-shadow:0 15px 40px rgba(0,0,0,0.2);
+width:650px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+}
+
+.topbar{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+
+}
+
+#switchBtn{
+
+font-size:20px;
+padding:8px 14px;
+border:none;
+border-radius:8px;
+background:#6a8cff;
+color:white;
+cursor:pointer;
+
+}
+
+#switchBtn:hover{
+
+background:#4e6ef2;
 
 }
 
@@ -29,32 +56,6 @@ font-size:16px;
 margin-top:10px;
 border-radius:8px;
 border:1px solid #ccc;
-
-}
-
-.controls{
-
-display:flex;
-gap:10px;
-justify-content:center;
-margin:10px 0;
-
-}
-
-button{
-
-padding:10px 20px;
-border:none;
-border-radius:8px;
-background:#6a8cff;
-color:white;
-font-size:16px;
-cursor:pointer;
-
-}
-
-button:hover{
-
-background:#5673ff;
+resize:none;
 
 }
