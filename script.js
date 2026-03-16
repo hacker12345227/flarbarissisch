@@ -1,53 +1,52 @@
+let dictionary = {}
 
-const dictionary = {
+fetch("dictionary.json")
+.then(res => res.json())
+.then(data => dictionary = data)
 
-"ik":"zlu",
-"jij":"flar",
-"ben":"bar",
-"bent":"bar",
-"persoon":"rissa",
-"vriend":"krub",
-"beste":"krubba",
-"hallo":"plub",
-"doei":"drub",
-"favoriete":"blor",
-"favoriet":"blor",
-"leuk":"blo",
-"speciaal":"flor",
-"blij":"zor",
-"grappig":"snor",
-"mijn":"mi"
+function generateFlarWord(word){
+
+let syllables = ["fl","bl","kr","sn","pl","zl","dr","gl"]
+
+let s1 = syllables[Math.floor(Math.random()*syllables.length)]
+let s2 = syllables[Math.floor(Math.random()*syllables.length)]
+
+return s1 + word.slice(0,3) + s2
 
 }
 
+function translateToFlar(){
 
-function toFlar(){
-
-let input = document.getElementById("inputText").value.toLowerCase()
+let input = document.getElementById("input").value.toLowerCase()
 let words = input.split(" ")
 
-let translated = words.map(word => dictionary[word] || word)
+let result = words.map(word => {
 
-document.getElementById("outputText").value = translated.join(" ")
+if(dictionary[word]) return dictionary[word]
+
+return generateFlarWord(word)
+
+})
+
+document.getElementById("output").value = result.join(" ")
 
 }
 
-
-function toDutch(){
+function translateToDutch(){
 
 let reverse = {}
 
-for (let key in dictionary){
+for(let key in dictionary){
 
 reverse[dictionary[key]] = key
 
 }
 
-let input = document.getElementById("inputText").value.toLowerCase()
+let input = document.getElementById("input").value.toLowerCase()
 let words = input.split(" ")
 
-let translated = words.map(word => reverse[word] || word)
+let result = words.map(word => reverse[word] || word)
 
-document.getElementById("outputText").value = translated.join(" ")
+document.getElementById("output").value = result.join(" ")
 
 }
