@@ -1,28 +1,31 @@
 :root{
 
---bg1:#6a8cff;
---bg2:#8f6bff;
+--bg1:#667eea;
+--bg2:#764ba2;
 
---card-bg:rgba(255,255,255,0.9);
+--card-bg:rgba(255,255,255,0.85);
 
 --text:#1f2937;
 
---border:#e5e7eb;
+--accent:#6366f1;
+--accent2:#8b5cf6;
 
---accent:#6a8cff;
+--border:#e5e7eb;
 
 --input-bg:#ffffff;
 
---shadow:0 30px 70px rgba(0,0,0,0.25);
+--shadow:0 25px 60px rgba(0,0,0,0.25);
 
 }
+
+/* DARK MODE */
 
 [data-theme="dark"]{
 
 --bg1:#0f172a;
 --bg2:#1e293b;
 
---card-bg:rgba(17,24,39,0.95);
+--card-bg:rgba(17,24,39,0.9);
 
 --text:#e5e7eb;
 
@@ -30,81 +33,108 @@
 
 --accent:#818cf8;
 
+--accent2:#a78bfa;
+
 --input-bg:#1f2937;
 
+}
+
+/* BASE */
+
+*{
+box-sizing:border-box;
 }
 
 body{
 
 margin:0;
 
-font-family:Inter,Arial;
+font-family:Inter,system-ui,Arial;
 
 background:linear-gradient(135deg,var(--bg1),var(--bg2));
 
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
 min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
 
 color:var(--text);
 
 }
 
+/* APP CONTAINER */
+
 .app{
+
 width:min(1000px,95%);
+
 }
+
+/* CARD */
 
 .card{
 
 background:var(--card-bg);
 
-backdrop-filter:blur(14px);
+backdrop-filter:blur(16px);
 
-border-radius:24px;
+border-radius:26px;
 
-padding:35px;
+padding:38px;
 
 box-shadow:var(--shadow);
 
+transition:0.3s;
+
 }
+
+/* TITLE */
 
 h1{
 
 text-align:center;
 
-margin-bottom:25px;
+margin-bottom:28px;
+
+font-size:32px;
+
+font-weight:700;
+
+letter-spacing:-0.5px;
 
 }
+
+/* TOOLBAR */
 
 .toolbar{
 
 display:flex;
 
+align-items:center;
+
 justify-content:center;
 
 gap:18px;
 
-margin-bottom:25px;
+margin-bottom:28px;
 
 font-weight:600;
 
 }
 
+/* SWITCH BUTTON */
+
 .switch-btn{
 
-background:var(--accent);
+background:linear-gradient(135deg,var(--accent),var(--accent2));
 
 color:white;
 
 border:none;
 
-width:52px;
-
-height:52px;
+width:54px;
+height:54px;
 
 border-radius:50%;
 
@@ -114,15 +144,23 @@ cursor:pointer;
 
 transition:0.25s;
 
+box-shadow:0 8px 18px rgba(0,0,0,0.2);
+
 }
 
 .switch-btn:hover{
+
 transform:scale(1.08);
+
 }
 
 .switch-btn.rotate{
+
 transform:rotate(180deg);
+
 }
+
+/* THEME BUTTON */
 
 .theme-btn{
 
@@ -130,15 +168,28 @@ border:none;
 
 background:var(--input-bg);
 
-width:44px;
+width:46px;
+height:46px;
 
-height:44px;
-
-border-radius:10px;
+border-radius:12px;
 
 cursor:pointer;
 
+font-size:18px;
+
+transition:0.2s;
+
+box-shadow:0 3px 10px rgba(0,0,0,0.15);
+
 }
+
+.theme-btn:hover{
+
+transform:scale(1.1);
+
+}
+
+/* PANES LAYOUT */
 
 .panes{
 
@@ -146,29 +197,35 @@ display:grid;
 
 grid-template-columns:1fr 1fr;
 
-gap:20px;
+gap:22px;
 
 }
+
+/* TEXTAREAS */
 
 textarea{
 
 width:100%;
 
-min-height:220px;
+min-height:230px;
 
-border-radius:16px;
+border-radius:18px;
 
 border:1px solid var(--border);
 
-padding:16px;
+padding:18px;
 
 font-size:15px;
+
+line-height:1.6;
 
 background:var(--input-bg);
 
 color:var(--text);
 
 resize:none;
+
+transition:0.25s;
 
 }
 
@@ -178,41 +235,57 @@ outline:none;
 
 border-color:var(--accent);
 
-box-shadow:0 0 0 3px rgba(106,140,255,0.25);
+box-shadow:0 0 0 4px rgba(99,102,241,0.25);
 
 }
+
+/* BUTTON GROUP */
 
 .buttons{
 
 display:flex;
 
-gap:10px;
+gap:12px;
 
-margin-top:12px;
+margin-top:14px;
 
 }
 
+/* COPY BUTTON */
+
 .copy-btn{
 
-background:var(--accent);
+background:linear-gradient(135deg,var(--accent),var(--accent2));
 
 border:none;
 
 color:white;
 
-padding:10px 16px;
+padding:10px 18px;
 
 border-radius:12px;
 
 cursor:pointer;
 
+font-weight:600;
+
 transition:0.2s;
 
 }
 
-.copy-btn.copied{
-background:#10b981;
+.copy-btn:hover{
+
+transform:translateY(-1px);
+
 }
+
+.copy-btn.copied{
+
+background:#10b981;
+
+}
+
+/* SPEAK BUTTON */
 
 .speak-btn{
 
@@ -222,22 +295,46 @@ border:none;
 
 color:white;
 
-padding:10px 16px;
+padding:10px 18px;
 
 border-radius:12px;
 
 cursor:pointer;
 
+font-weight:600;
+
+transition:0.2s;
+
 }
+
+.speak-btn:hover{
+
+background:#059669;
+
+transform:translateY(-1px);
+
+}
+
+/* MOBILE */
 
 @media (max-width:850px){
 
 .panes{
+
 grid-template-columns:1fr;
+
 }
 
 textarea{
+
 min-height:180px;
+
+}
+
+.card{
+
+padding:26px;
+
 }
 
 }
