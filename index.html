@@ -4,28 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flarbarissisch Translator</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
+
 <body>
 
-<div class="container">
+<div class="app">
 
 <h1>🌸 Flarbarissisch Translator</h1>
 
-<div class="translator">
+<textarea id="input"></textarea>
 
-<textarea id="inputText" placeholder="Typ tekst..."></textarea>
-
-<div class="buttons">
-<button onclick="toFlar()">NL → Flarbarissisch</button>
-<button onclick="toDutch()">Flarbarissisch → NL</button>
+<div class="controls">
+<button onclick="translateToFlar()">NL → Flarbarissisch</button>
+<button onclick="translateToDutch()">Flarbarissisch → NL</button>
 </div>
 
-<textarea id="outputText" placeholder="Vertaling..." readonly></textarea>
-
-</div>
+<textarea id="output" readonly></textarea>
 
 </div>
 
