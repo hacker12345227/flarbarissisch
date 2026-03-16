@@ -248,7 +248,6 @@ margin-top:10px;
 .speak-btn{
 
 border:none;
-
 background:#10b981;
 
 color:white;
@@ -264,5 +263,22 @@ cursor:pointer;
 .speak-btn:hover{
 
 background:#059669;
+
+}
+
+.voice-selector{
+
+margin-top:15px;
+display:flex;
+gap:10px;
+align-items:center;
+
+}
+
+select{
+
+padding:6px 10px;
+border-radius:8px;
+border:1px solid #ccc;
 
 }
