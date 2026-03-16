@@ -8,10 +8,10 @@ const output = document.getElementById("output")
 const autocomplete = document.getElementById("autocomplete")
 
 fetch("dictionary.json")
-.then(res => res.json())
-.then(data => {
+.then(res=>res.json())
+.then(data=>{
 
-dictionary = data
+dictionary=data
 
 for(let key in dictionary){
 reverseDictionary[dictionary[key]] = key
@@ -33,10 +33,10 @@ let words = normalize(input.value).split(/\s+/)
 
 let result
 
-if(mode === "nl-flar"){
-result = words.map(w => dictionary[w] || w)
+if(mode==="nl-flar"){
+result = words.map(w=>dictionary[w]||w)
 }else{
-result = words.map(w => reverseDictionary[w] || w)
+result = words.map(w=>reverseDictionary[w]||w)
 }
 
 output.value = result.join(" ")
@@ -55,7 +55,7 @@ if(!part) return
 
 let keys = Object.keys(dictionary)
 
-let matches = keys.filter(w=>w.startsWith(part)).slice(0,6)
+let matches = keys.filter(w=>w.startsWith(part)).slice(0,5)
 
 if(matches.length===0) return
 
@@ -64,15 +64,12 @@ autocomplete.classList.add("show")
 matches.forEach(word=>{
 
 let div=document.createElement("div")
-
 div.className="autocomplete-item"
-
 div.innerText=word
 
 div.onclick=()=>{
 
 let words=input.value.split(/\s+/)
-
 words[words.length-1]=word
 
 input.value=words.join(" ")
@@ -102,7 +99,6 @@ document.getElementById("switchBtn").addEventListener("click",()=>{
 let btn=document.getElementById("switchBtn")
 
 btn.classList.add("rotate")
-
 setTimeout(()=>btn.classList.remove("rotate"),300)
 
 if(mode==="nl-flar"){
@@ -129,19 +125,8 @@ document.getElementById("copyBtn").addEventListener("click",()=>{
 
 let text=output.value
 
-if(!text) return
-
 if(navigator.clipboard){
 navigator.clipboard.writeText(text)
-}else{
-
-let temp=document.createElement("textarea")
-temp.value=text
-document.body.appendChild(temp)
-temp.select()
-document.execCommand("copy")
-document.body.removeChild(temp)
-
 }
 
 })
@@ -163,42 +148,36 @@ themeToggle.innerText = theme==="dark" ? "☀️" : "🌙"
 const savedTheme=localStorage.getItem("theme")
 
 if(savedTheme){
-
 setTheme(savedTheme)
-
 }else{
-
-const prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches
-
-setTheme(prefersDark ? "dark" : "light")
-
+setTheme("light")
 }
 
 themeToggle.addEventListener("click",()=>{
 
 const current=document.documentElement.getAttribute("data-theme")
 
-setTheme(current==="dark" ? "light" : "dark")
+setTheme(current==="dark" ? "light":"dark")
 
 })
 
+/* speech */
 
-let voices = []
-
-const voiceSelect = document.getElementById("voiceSelect")
+let voices=[]
+const voiceSelect=document.getElementById("voiceSelect")
 
 function loadVoices(){
 
 voices = speechSynthesis.getVoices()
 
-voiceSelect.innerHTML = ""
+voiceSelect.innerHTML=""
 
 voices.forEach((voice,i)=>{
 
-let option = document.createElement("option")
+let option=document.createElement("option")
 
-option.value = i
-option.textContent = voice.name + " (" + voice.lang + ")"
+option.value=i
+option.textContent=voice.name+" ("+voice.lang+")"
 
 voiceSelect.appendChild(option)
 
@@ -220,21 +199,14 @@ if(voices[voiceIndex]){
 utter.voice = voices[voiceIndex]
 }
 
-utter.rate = 0.9
-utter.pitch = 1
-
 speechSynthesis.speak(utter)
 
 }
 
 document.getElementById("speakInputBtn").addEventListener("click",()=>{
-
-speak(document.getElementById("input").value)
-
+speak(input.value)
 })
 
 document.getElementById("speakOutputBtn").addEventListener("click",()=>{
-
-speak(document.getElementById("output").value)
-
+speak(output.value)
 })
