@@ -1,19 +1,23 @@
-let dictionary={}
-let reverseDictionary={}
+let dictionary = {}
+let reverseDictionary = {}
 
-let mode="nl-flar"
+let mode = "nl-flar"
 
-const input=document.getElementById("input")
-const output=document.getElementById("output")
+const input = document.getElementById("input")
+const output = document.getElementById("output")
+
+/* ===================== */
+/* DICTIONARY */
+/* ===================== */
 
 fetch("dictionary.json")
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
-dictionary=data
+dictionary = data
 
 for(let key in dictionary){
-reverseDictionary[dictionary[key]]=key
+reverseDictionary[dictionary[key]] = key
 }
 
 })
@@ -24,25 +28,27 @@ return text.toLowerCase().replace(/[.,!?]/g,"")
 
 function translate(){
 
-let words=normalize(input.value).split(/\s+/)
+let words = normalize(input.value).split(/\s+/)
 
 let result
 
 if(mode==="nl-flar"){
-result=words.map(w=>dictionary[w]||w)
+result = words.map(w => dictionary[w] || w)
 }else{
-result=words.map(w=>reverseDictionary[w]||w)
+result = words.map(w => reverseDictionary[w] || w)
 }
 
-output.value=result.join(" ")
+output.value = result.join(" ")
 
 }
 
-input.addEventListener("input",translate)
+input.addEventListener("input", translate)
 
-/* switch */
+/* ===================== */
+/* SWITCH */
+/* ===================== */
 
-switchBtn.onclick=()=>{
+switchBtn.onclick = () => {
 
 switchBtn.classList.add("rotate")
 
@@ -68,13 +74,15 @@ translate()
 
 }
 
-/* copy animatie */
+/* ===================== */
+/* COPY */
+/* ===================== */
 
-copyBtn.onclick=()=>{
+copyBtn.onclick = () => {
 
 navigator.clipboard.writeText(output.value)
 
-copyBtn.innerText="✅ Gekopieerd"
+copyBtn.innerText = "✅ Gekopieerd"
 copyBtn.classList.add("copied")
 
 setTimeout(()=>{
@@ -86,64 +94,117 @@ copyBtn.classList.remove("copied")
 
 }
 
-/* dark mode */
+/* ===================== */
+/* DARK MODE */
+/* ===================== */
 
-themeToggle.onclick=()=>{
+themeToggle.onclick = () => {
 
-let current=document.documentElement.getAttribute("data-theme")
+let current = document.documentElement.getAttribute("data-theme")
 
-document.documentElement.setAttribute(
-"data-theme",
-current==="dark"?"light":"dark"
-)
+let newTheme = current === "dark" ? "light" : "dark"
+
+document.documentElement.setAttribute("data-theme", newTheme)
+
+localStorage.setItem("theme", newTheme)
 
 }
 
-/* stemmen */
+let savedTheme = localStorage.getItem("theme")
 
-let voices=[]
-let maleVoice=null
-let femaleVoice=null
+if(savedTheme){
+document.documentElement.setAttribute("data-theme", savedTheme)
+}
+
+/* ===================== */
+/* VOICES */
+/* ===================== */
+
+let voices = []
+let maleVoice = null
+let femaleVoice = null
+let fallbackVoice = null
 
 function loadVoices(){
 
-voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith("nl"))
+let allVoices = speechSynthesis.getVoices()
 
-if(voices.length>0){
+/* alleen NL stemmen */
 
-femaleVoice=voices[0]
+voices = allVoices.filter(v => v.lang.startsWith("nl"))
 
-maleVoice=voices.find(v=>v.name.toLowerCase().includes("male")) || voices[1] || voices[0]
+/* fallback */
+
+fallbackVoice = voices[0] || allVoices[0]
+
+/* reset */
+
+maleVoice = null
+femaleVoice = null
+
+voices.forEach(v => {
+
+let name = v.name.toLowerCase()
+
+if(!femaleVoice && (
+name.includes("vrouw") ||
+name.includes("female") ||
+name.includes("zira") ||
+name.includes("susan")
+)){
+femaleVoice = v
+}
+
+if(!maleVoice && (
+name.includes("male") ||
+name.includes("david") ||
+name.includes("mark")
+)){
+maleVoice = v
+}
+
+})
+
+/* fallback logic */
+
+if(!femaleVoice) femaleVoice = fallbackVoice
+if(!maleVoice) maleVoice = fallbackVoice
 
 }
 
-}
+speechSynthesis.onvoiceschanged = loadVoices
 
-speechSynthesis.onvoiceschanged=loadVoices
 loadVoices()
+
+/* ===================== */
+/* SPEAK */
+/* ===================== */
 
 function speak(text){
 
-if(!text)return
+if(!text) return
 
 speechSynthesis.cancel()
 
-let utter=new SpeechSynthesisUtterance(text)
+let utter = new SpeechSynthesisUtterance(text)
 
-let voiceType=document.getElementById("voiceSelect").value
+let voiceType = document.getElementById("voiceSelect").value
 
-if(voiceType==="male"){
-utter.voice=maleVoice
+if(voiceType === "male"){
+utter.voice = maleVoice
 }else{
-utter.voice=femaleVoice
+utter.voice = femaleVoice
 }
 
-utter.lang="nl-NL"
-utter.rate=0.9
+utter.lang = "nl-NL"
+utter.rate = 0.9
+utter.pitch = 1
 
 speechSynthesis.speak(utter)
 
 }
 
-speakInputBtn.onclick=()=>speak(input.value)
-speakOutputBtn.onclick=()=>speak(output.value)
+/* buttons */
+
+speakInputBtn.onclick = () => speak(input.value)
+speakOutputBtn.onclick = () => speak(output.value)
