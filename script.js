@@ -1,109 +1,61 @@
-let dictionary = {}
-let reverseDictionary = {}
+body{
 
-fetch("dictionary.json")
-.then(res => res.json())
-.then(data => {
-
-    dictionary = data
-
-    for (let key in dictionary){
-        reverseDictionary[dictionary[key]] = key
-    }
-
-})
-
-function normalize(text){
-
-return text
-.toLowerCase()
-.replace(/[.,!?]/g,"")
+font-family:Arial;
+background:linear-gradient(135deg,#6a8cff,#9a6aff);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:0;
 
 }
 
-function applyGrammar(word){
+.translator{
 
-// voorbeeld regels
-
-// meervoud
-if(word.endsWith("en")){
-return word.slice(0,-2) + "or"
-}
-
-// verleden tijd
-if(word.endsWith("de") || word.endsWith("te")){
-return word.slice(0,-2) + "ar"
-}
-
-return word
+background:white;
+padding:30px;
+border-radius:12px;
+width:650px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
 
 }
 
-function reorderSentence(words){
+.topbar{
 
-// simpele Flarbarissische structuur
-
-if(words.length === 4){
-
-return [
-words[0],
-words[3],
-words[1],
-words[2]
-]
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
 
 }
 
-return words
+#switchBtn{
+
+font-size:20px;
+padding:8px 14px;
+border:none;
+border-radius:8px;
+background:#6a8cff;
+color:white;
+cursor:pointer;
 
 }
 
-function translateWordToFlar(word){
+#switchBtn:hover{
 
-if(dictionary[word]){
-
-return applyGrammar(dictionary[word])
+background:#4e6ef2;
 
 }
 
-return word
+textarea{
 
-}
-
-function translateWordToDutch(word){
-
-if(reverseDictionary[word]){
-
-return reverseDictionary[word]
-
-}
-
-return word
-
-}
-
-function translateToFlar(){
-
-let input = normalize(document.getElementById("input").value)
-
-let words = input.split(/\s+/)
-
-words = reorderSentence(words)
-
-let result = words.map(word => translateWordToFlar(word))
-
-document.getElementById("output").value = result.join(" ")
-
-}
-
-function translateToDutch(){
-
-let input = normalize(document.getElementById("input").value)
-
-let words = input.split(/\s+/)
-
-let result = words.map(word => translateWordToDutch(word))
-
-document.getElementById("output").value = result.join(" ")
+width:100%;
+height:140px;
+padding:12px;
+font-size:16px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+resize:none;
 
 }
