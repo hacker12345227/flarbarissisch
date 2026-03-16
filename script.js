@@ -19,9 +19,7 @@ reverseDictionary[dictionary[key]]=key
 })
 
 function normalize(text){
-
 return text.toLowerCase().replace(/[.,!?]/g,"")
-
 }
 
 function translate(){
@@ -42,7 +40,7 @@ output.value=result.join(" ")
 
 input.addEventListener("input",translate)
 
-/* switch talen */
+/* switch */
 
 switchBtn.onclick=()=>{
 
@@ -101,19 +99,6 @@ current==="dark"?"light":"dark"
 
 }
 
-/* flar uitspraak */
-
-function flarPronounce(text){
-
-return text
-.replace(/zl/g,"zul")
-.replace(/fl/g,"fla")
-.replace(/kr/g,"kru")
-.replace(/sn/g,"sun")
-.replace(/dr/g,"dur")
-
-}
-
 /* stemmen */
 
 let voices=[]
@@ -124,8 +109,13 @@ function loadVoices(){
 
 voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith("nl"))
 
-femaleVoice=voices[0]||null
-maleVoice=voices[1]||voices[0]||null
+if(voices.length>0){
+
+femaleVoice=voices[0]
+
+maleVoice=voices.find(v=>v.name.toLowerCase().includes("male")) || voices[1] || voices[0]
+
+}
 
 }
 
@@ -138,27 +128,22 @@ if(!text)return
 
 speechSynthesis.cancel()
 
-let utter=new SpeechSynthesisUtterance(flarPronounce(text))
+let utter=new SpeechSynthesisUtterance(text)
 
 let voiceType=document.getElementById("voiceSelect").value
 
-if(voiceType==="female" && femaleVoice){
+if(voiceType==="male"){
+utter.voice=maleVoice
+}else{
 utter.voice=femaleVoice
 }
 
-if(voiceType==="male" && maleVoice){
-utter.voice=maleVoice
-}
-
 utter.lang="nl-NL"
-
 utter.rate=0.9
 
 speechSynthesis.speak(utter)
 
 }
-
-/* luister knoppen */
 
 speakInputBtn.onclick=()=>speak(input.value)
 speakOutputBtn.onclick=()=>speak(output.value)
