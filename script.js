@@ -1,61 +1,85 @@
-body{
+let dictionary = {}
+let reverseDictionary = {}
 
-font-family:Arial;
-background:linear-gradient(135deg,#6a8cff,#9a6aff);
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-margin:0;
+let mode = "nl-flar"
+
+fetch("dictionary.json")
+.then(res => res.json())
+.then(data => {
+
+dictionary = data
+
+for (let key in dictionary){
+reverseDictionary[dictionary[key]] = key
+}
+
+})
+
+function normalize(text){
+
+return text
+.toLowerCase()
+.replace(/[.,!?]/g,"")
 
 }
 
-.translator{
+function translateNLtoFlar(words){
 
-background:white;
-padding:30px;
-border-radius:12px;
-width:650px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
+return words.map(word => dictionary[word] || word)
 
 }
 
-.topbar{
+function translateFlartoNL(words){
 
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
+return words.map(word => reverseDictionary[word] || word)
 
 }
 
-#switchBtn{
+function translate(){
 
-font-size:20px;
-padding:8px 14px;
-border:none;
-border-radius:8px;
-background:#6a8cff;
-color:white;
-cursor:pointer;
+let input = normalize(document.getElementById("input").value)
+
+if(input.trim() === ""){
+document.getElementById("liveOutput").innerText = ""
+return
+}
+
+let words = input.split(/\s+/)
+
+let result
+
+if(mode === "nl-flar"){
+result = translateNLtoFlar(words)
+}
+else{
+result = translateFlartoNL(words)
+}
+
+document.getElementById("liveOutput").innerText = result.join(" ")
 
 }
 
-#switchBtn:hover{
+document.getElementById("input").addEventListener("input", translate)
 
-background:#4e6ef2;
+document.getElementById("switchBtn").addEventListener("click", () => {
+
+if(mode === "nl-flar"){
+
+mode = "flar-nl"
+
+document.getElementById("langLeft").innerText = "Flarbarissisch"
+document.getElementById("langRight").innerText = "Nederlands"
+
+}
+else{
+
+mode = "nl-flar"
+
+document.getElementById("langLeft").innerText = "Nederlands"
+document.getElementById("langRight").innerText = "Flarbarissisch"
 
 }
 
-textarea{
+translate()
 
-width:100%;
-height:140px;
-padding:12px;
-font-size:16px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ccc;
-resize:none;
-
-}
+})
