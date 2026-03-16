@@ -1,62 +1,60 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flarbarissisch Translator</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flarbarissisch Translator</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <main class="app">
-    <section class="card">
-      <h1>🌸 Flarbarissisch Translator</h1>
 
-      <div class="toolbar">
-        <span id="langLeft" class="lang">Nederlands</span>
+<div class="app">
 
-        <button id="switchBtn" class="switch-btn" type="button" aria-label="Wissel talen">
-          <span class="switch-icon">⇄</span>
-        </button>
+<div class="card">
 
-        <span id="langRight" class="lang">Flarbarissisch</span>
-      </div>
+<h1>🌸 Flarbarissisch Translator</h1>
 
 <div class="toolbar">
 
-<span id="langLeft" class="lang">Nederlands</span>
+<span id="langLeft">Nederlands</span>
 
 <button id="switchBtn" class="switch-btn">
-<span class="switch-icon">⇄</span>
+⇄
 </button>
 
-<span id="langRight" class="lang">Flarbarissisch</span>
+<span id="langRight">Flarbarissisch</span>
 
-<button id="themeToggle" class="theme-btn">
-🌙
-</button>
+<button id="themeToggle" class="theme-btn">🌙</button>
 
 </div>
 
-      <div class="panes" id="panes">
-        <div class="pane">
-          <label for="input" class="pane-label">Tekst</label>
-          <div class="input-wrap">
-            <textarea id="input" placeholder="Typ tekst..." spellcheck="false"></textarea>
-            <div id="autocomplete" class="autocomplete"></div>
-          </div>
-        </div>
+<div class="panes">
 
-        <div class="pane">
-          <div class="output-top">
-            <label for="output" class="pane-label">Vertaling</label>
-            <button id="copyBtn" class="copy-btn" type="button">📋 Kopieer</button>
-          </div>
-          <textarea id="output" placeholder="Vertaling..." readonly></textarea>
-        </div>
-      </div>
-    </section>
-  </main>
+<div class="pane">
 
-  <script src="script.js"></script>
+<textarea id="input" placeholder="Typ tekst..."></textarea>
+
+<div id="autocomplete" class="autocomplete"></div>
+
+</div>
+
+<div class="pane">
+
+<textarea id="output" readonly></textarea>
+
+<button id="copyBtn" class="copy-btn">📋 Copy</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
