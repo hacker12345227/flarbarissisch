@@ -1,187 +1,183 @@
-let dictionary = {};
-let reverseDictionary = {};
-let mode = "nl-flar";
+let dictionary = {}
+let reverseDictionary = {}
 
-const inputEl = document.getElementById("input");
-const outputEl = document.getElementById("output");
-const autocompleteEl = document.getElementById("autocomplete");
-const switchBtn = document.getElementById("switchBtn");
-const copyBtn = document.getElementById("copyBtn");
-const langLeft = document.getElementById("langLeft");
-const langRight = document.getElementById("langRight");
+let mode = "nl-flar"
+
+const input = document.getElementById("input")
+const output = document.getElementById("output")
+const autocomplete = document.getElementById("autocomplete")
 
 fetch("dictionary.json")
-  .then((res) => res.json())
-  .then((data) => {
-    dictionary = data;
+.then(res => res.json())
+.then(data => {
 
-    for (const key in dictionary) {
-      reverseDictionary[dictionary[key]] = key;
-    }
+dictionary = data
 
-    translate();
-  })
-  .catch((err) => {
-    console.error("Kon dictionary.json niet laden:", err);
-  });
-
-function normalize(text) {
-  return text.toLowerCase().replace(/[.,!?;:()"'`]/g, "");
+for(let key in dictionary){
+reverseDictionary[dictionary[key]] = key
 }
 
-function getActiveDictionary() {
-  return mode === "nl-flar" ? dictionary : reverseDictionary;
+})
+
+function normalize(text){
+
+return text
+.toLowerCase()
+.replace(/[.,!?]/g,"")
+
 }
 
-function translateWords(words) {
-  const activeDictionary = getActiveDictionary();
-  return words.map((word) => activeDictionary[word] || word);
+function translate(){
+
+let words = normalize(input.value).split(/\s+/)
+
+let result
+
+if(mode === "nl-flar"){
+result = words.map(w => dictionary[w] || w)
+}else{
+result = words.map(w => reverseDictionary[w] || w)
 }
 
-function translate() {
-  const rawInput = inputEl.value;
-  const cleaned = normalize(rawInput).trim();
+output.value = result.join(" ")
 
-  if (!cleaned) {
-    outputEl.value = "";
-    hideAutocomplete();
-    return;
-  }
+showAutocomplete(words[words.length-1])
 
-  const words = cleaned.split(/\s+/);
-  const translated = translateWords(words);
-  outputEl.value = translated.join(" ");
-
-  const currentPartial = getCurrentPartial(rawInput);
-  showAutocomplete(currentPartial);
 }
 
-function getCurrentPartial(text) {
-  const match = text.toLowerCase().match(/([^\s]+)$/);
-  if (!match) return "";
-  return match[1].replace(/[.,!?;:()"'`]/g, "");
+input.addEventListener("input",translate)
+
+function showAutocomplete(part){
+
+autocomplete.innerHTML=""
+
+if(!part) return
+
+let keys = Object.keys(dictionary)
+
+let matches = keys.filter(w=>w.startsWith(part)).slice(0,6)
+
+if(matches.length===0) return
+
+autocomplete.classList.add("show")
+
+matches.forEach(word=>{
+
+let div=document.createElement("div")
+
+div.className="autocomplete-item"
+
+div.innerText=word
+
+div.onclick=()=>{
+
+let words=input.value.split(/\s+/)
+
+words[words.length-1]=word
+
+input.value=words.join(" ")
+
+autocomplete.classList.remove("show")
+
+translate()
+
 }
 
-function showAutocomplete(partial) {
-  const activeDictionary = getActiveDictionary();
-  autocompleteEl.innerHTML = "";
+autocomplete.appendChild(div)
 
-  if (!partial || partial.length < 1) {
-    hideAutocomplete();
-    return;
-  }
+})
 
-  const keys = Object.keys(activeDictionary)
-    .filter((word) => word.startsWith(partial))
-    .slice(0, 6);
-
-  if (keys.length === 0) {
-    hideAutocomplete();
-    return;
-  }
-
-  keys.forEach((word) => {
-    const item = document.createElement("div");
-    item.className = "autocomplete-item";
-    item.textContent = word;
-
-    item.addEventListener("click", () => {
-      applySuggestion(word);
-    });
-
-    autocompleteEl.appendChild(item);
-  });
-
-  autocompleteEl.classList.add("show");
 }
 
-function hideAutocomplete() {
-  autocompleteEl.classList.remove("show");
-  autocompleteEl.innerHTML = "";
+document.addEventListener("click",e=>{
+
+if(!autocomplete.contains(e.target) && e.target!==input){
+autocomplete.classList.remove("show")
 }
 
-function applySuggestion(selectedWord) {
-  const current = inputEl.value;
-  const replaced = current.replace(/([^\s]*)$/, selectedWord);
-  inputEl.value = replaced.endsWith(" ") ? replaced : replaced + " ";
-  inputEl.focus();
-  hideAutocomplete();
-  translate();
+})
+
+document.getElementById("switchBtn").addEventListener("click",()=>{
+
+let btn=document.getElementById("switchBtn")
+
+btn.classList.add("rotate")
+
+setTimeout(()=>btn.classList.remove("rotate"),300)
+
+if(mode==="nl-flar"){
+
+mode="flar-nl"
+
+document.getElementById("langLeft").innerText="Flarbarissisch"
+document.getElementById("langRight").innerText="Nederlands"
+
+}else{
+
+mode="nl-flar"
+
+document.getElementById("langLeft").innerText="Nederlands"
+document.getElementById("langRight").innerText="Flarbarissisch"
+
 }
 
-inputEl.addEventListener("input", translate);
+translate()
 
-inputEl.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    hideAutocomplete();
-  }
-});
+})
 
-document.addEventListener("click", (event) => {
-  const clickedInsideInput = event.target === inputEl;
-  const clickedInsideAutocomplete = autocompleteEl.contains(event.target);
+document.getElementById("copyBtn").addEventListener("click",()=>{
 
-  if (!clickedInsideInput && !clickedInsideAutocomplete) {
-    hideAutocomplete();
-  }
-});
+let text=output.value
 
-switchBtn.addEventListener("click", () => {
-  switchBtn.classList.add("rotating");
-  setTimeout(() => switchBtn.classList.remove("rotating"), 350);
+if(!text) return
 
-  const oldInput = inputEl.value;
-  const oldOutput = outputEl.value;
+if(navigator.clipboard){
+navigator.clipboard.writeText(text)
+}else{
 
-  if (mode === "nl-flar") {
-    mode = "flar-nl";
-    langLeft.textContent = "Flarbarissisch";
-    langRight.textContent = "Nederlands";
-  } else {
-    mode = "nl-flar";
-    langLeft.textContent = "Nederlands";
-    langRight.textContent = "Flarbarissisch";
-  }
+let temp=document.createElement("textarea")
+temp.value=text
+document.body.appendChild(temp)
+temp.select()
+document.execCommand("copy")
+document.body.removeChild(temp)
 
-  inputEl.value = oldOutput;
-  outputEl.value = oldInput ? normalize(oldInput) : "";
-  translate();
-});
-
-copyBtn.addEventListener("click", async () => {
-  const text = outputEl.value;
-
-  if (!text) return;
-
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      fallbackCopyText(text);
-    }
-
-    const original = copyBtn.textContent;
-    copyBtn.textContent = "✅ Gekopieerd";
-    copyBtn.classList.add("copied");
-
-    setTimeout(() => {
-      copyBtn.textContent = original;
-      copyBtn.classList.remove("copied");
-    }, 1400);
-  } catch (error) {
-    console.error("Kopiëren mislukt:", error);
-    alert("Kopiëren lukte niet.");
-  }
-});
-
-function fallbackCopyText(text) {
-  const temp = document.createElement("textarea");
-  temp.value = text;
-  temp.setAttribute("readonly", "");
-  temp.style.position = "absolute";
-  temp.style.left = "-9999px";
-  document.body.appendChild(temp);
-  temp.select();
-  document.execCommand("copy");
-  document.body.removeChild(temp);
 }
+
+})
+
+/* dark mode */
+
+const themeToggle=document.getElementById("themeToggle")
+
+function setTheme(theme){
+
+document.documentElement.setAttribute("data-theme",theme)
+
+localStorage.setItem("theme",theme)
+
+themeToggle.innerText = theme==="dark" ? "☀️" : "🌙"
+
+}
+
+const savedTheme=localStorage.getItem("theme")
+
+if(savedTheme){
+
+setTheme(savedTheme)
+
+}else{
+
+const prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches
+
+setTheme(prefersDark ? "dark" : "light")
+
+}
+
+themeToggle.addEventListener("click",()=>{
+
+const current=document.documentElement.getAttribute("data-theme")
+
+setTheme(current==="dark" ? "light" : "dark")
+
+})
