@@ -1,32 +1,96 @@
 let dictionary = {}
+let reverseDictionary = {}
 
 fetch("dictionary.json")
 .then(res => res.json())
-.then(data => dictionary = data)
+.then(data => {
 
-function generateFlarWord(word){
+    dictionary = data
 
-let syllables = ["fl","bl","kr","sn","pl","zl","dr","gl"]
+    for (let key in dictionary){
+        reverseDictionary[dictionary[key]] = key
+    }
 
-let s1 = syllables[Math.floor(Math.random()*syllables.length)]
-let s2 = syllables[Math.floor(Math.random()*syllables.length)]
+})
 
-return s1 + word.slice(0,3) + s2
+function normalize(text){
+
+return text
+.toLowerCase()
+.replace(/[.,!?]/g,"")
+
+}
+
+function applyGrammar(word){
+
+// voorbeeld regels
+
+// meervoud
+if(word.endsWith("en")){
+return word.slice(0,-2) + "or"
+}
+
+// verleden tijd
+if(word.endsWith("de") || word.endsWith("te")){
+return word.slice(0,-2) + "ar"
+}
+
+return word
+
+}
+
+function reorderSentence(words){
+
+// simpele Flarbarissische structuur
+
+if(words.length === 4){
+
+return [
+words[0],
+words[3],
+words[1],
+words[2]
+]
+
+}
+
+return words
+
+}
+
+function translateWordToFlar(word){
+
+if(dictionary[word]){
+
+return applyGrammar(dictionary[word])
+
+}
+
+return word
+
+}
+
+function translateWordToDutch(word){
+
+if(reverseDictionary[word]){
+
+return reverseDictionary[word]
+
+}
+
+return word
 
 }
 
 function translateToFlar(){
 
-let input = document.getElementById("input").value.toLowerCase()
-let words = input.split(" ")
+let input = normalize(document.getElementById("input").value)
 
-let result = words.map(word => {
+let words = input.split(/\s+/)
 
-if(dictionary[word]) return dictionary[word]
+words = reorderSentence(words)
 
-return generateFlarWord(word)
-
-})
+let result = words.map(word => translateWordToFlar(word))
 
 document.getElementById("output").value = result.join(" ")
 
@@ -34,18 +98,11 @@ document.getElementById("output").value = result.join(" ")
 
 function translateToDutch(){
 
-let reverse = {}
+let input = normalize(document.getElementById("input").value)
 
-for(let key in dictionary){
+let words = input.split(/\s+/)
 
-reverse[dictionary[key]] = key
-
-}
-
-let input = document.getElementById("input").value.toLowerCase()
-let words = input.split(" ")
-
-let result = words.map(word => reverse[word] || word)
+let result = words.map(word => translateWordToDutch(word))
 
 document.getElementById("output").value = result.join(" ")
 
