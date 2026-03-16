@@ -49,12 +49,6 @@ color:var(--text);
 
 }
 
-.app{
-
-width:min(1000px,95%);
-
-}
-
 .card{
 
 background:var(--card-bg);
@@ -63,25 +57,23 @@ border-radius:20px;
 
 padding:30px;
 
+width:900px;
+
 box-shadow:0 20px 60px rgba(0,0,0,0.25);
 
 }
 
 h1{
-
 text-align:center;
 margin-bottom:25px;
-
 }
 
 .toolbar{
 
 display:flex;
-align-items:center;
 justify-content:center;
 gap:15px;
-
-margin-bottom:25px;
+margin-bottom:20px;
 
 }
 
@@ -105,15 +97,12 @@ transition:0.3s;
 }
 
 .switch-btn.rotate{
-
 transform:rotate(180deg);
-
 }
 
 .theme-btn{
 
 border:none;
-
 background:var(--input-bg);
 
 width:42px;
@@ -128,85 +117,85 @@ cursor:pointer;
 .panes{
 
 display:grid;
-
 grid-template-columns:1fr 1fr;
-
 gap:18px;
-
-}
-
-.pane{
-
-position:relative;
 
 }
 
 textarea{
 
 width:100%;
-
-min-height:220px;
-
-resize:none;
-
-border-radius:14px;
-
+min-height:200px;
+border-radius:12px;
 border:1px solid var(--border);
-
-padding:16px;
-
+padding:14px;
 font-size:15px;
-
 background:var(--input-bg);
-
 color:var(--text);
+resize:none;
 
 }
 
 textarea:focus{
-
 outline:none;
-
 border-color:var(--accent);
+}
+
+.buttons{
+
+display:flex;
+gap:10px;
+margin-top:10px;
 
 }
 
 .copy-btn{
 
-margin-top:10px;
+border:none;
+background:var(--accent);
+color:white;
+padding:10px 14px;
+border-radius:10px;
+cursor:pointer;
+
+}
+
+.speak-btn{
 
 border:none;
-
-background:var(--accent);
-
+background:#10b981;
 color:white;
-
 padding:10px 14px;
-
 border-radius:10px;
-
 cursor:pointer;
+
+}
+
+.voice-selector{
+
+margin-top:20px;
+display:flex;
+gap:10px;
+align-items:center;
+
+}
+
+select{
+
+padding:6px 10px;
+border-radius:8px;
+border:1px solid var(--border);
 
 }
 
 .autocomplete{
 
 position:absolute;
-
-left:0;
-right:0;
-top:70px;
-
 background:var(--card-bg);
-
 border:1px solid var(--border);
-
 border-radius:10px;
-
 display:none;
-
 max-height:150px;
-
 overflow-y:auto;
 
 }
@@ -218,7 +207,6 @@ display:block;
 .autocomplete-item{
 
 padding:8px 12px;
-
 cursor:pointer;
 
 }
@@ -234,51 +222,5 @@ background:var(--input-bg);
 .panes{
 grid-template-columns:1fr;
 }
-
-}
-
-.buttons{
-
-display:flex;
-gap:10px;
-margin-top:10px;
-
-}
-
-.speak-btn{
-
-border:none;
-background:#10b981;
-
-color:white;
-
-padding:10px 14px;
-
-border-radius:10px;
-
-cursor:pointer;
-
-}
-
-.speak-btn:hover{
-
-background:#059669;
-
-}
-
-.voice-selector{
-
-margin-top:15px;
-display:flex;
-gap:10px;
-align-items:center;
-
-}
-
-select{
-
-padding:6px 10px;
-border-radius:8px;
-border:1px solid #ccc;
 
 }
