@@ -5,6 +5,8 @@ let mode="nl-flar"
 
 const input=document.getElementById("input")
 const output=document.getElementById("output")
+const autocomplete=document.getElementById("autocomplete")
+const copyBtn=document.getElementById("copyBtn")
 
 fetch("dictionary.json")
 .then(res=>res.json())
@@ -42,13 +44,13 @@ output.value=result.join(" ")
 
 input.addEventListener("input",translate)
 
-document.getElementById("switchBtn").onclick=()=>{
+/* switch */
 
-let btn=document.getElementById("switchBtn")
+switchBtn.onclick=()=>{
 
-btn.classList.add("rotate")
+switchBtn.classList.add("rotate")
 
-setTimeout(()=>btn.classList.remove("rotate"),300)
+setTimeout(()=>switchBtn.classList.remove("rotate"),300)
 
 if(mode==="nl-flar"){
 
@@ -92,31 +94,64 @@ copyBtn.classList.remove("copied")
 
 const themeToggle=document.getElementById("themeToggle")
 
+let savedTheme=localStorage.getItem("theme")
+
+if(savedTheme){
+document.documentElement.setAttribute("data-theme",savedTheme)
+}
+
 themeToggle.onclick=()=>{
 
 let current=document.documentElement.getAttribute("data-theme")
 
-document.documentElement.setAttribute("data-theme",current==="dark"?"light":"dark")
+let newTheme=current==="dark"?"light":"dark"
+
+document.documentElement.setAttribute("data-theme",newTheme)
+
+localStorage.setItem("theme",newTheme)
 
 }
 
-/* flarbarissisch uitspraakregels */
+/* flarbarissisch uitspraak */
 
-function flarPronounce(text){
+function flarPronounce(word){
 
-return text
-
+return word
 .replace(/zl/g,"zul")
 .replace(/fl/g,"fla")
 .replace(/kr/g,"kru")
 
 }
 
-/* speech + highlight */
+/* stemmen */
+
+let voices=[]
+let maleVoice=null
+let femaleVoice=null
+
+function loadVoices(){
+
+voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith("nl"))
+
+voices.forEach(v=>{
+
+let name=v.name.toLowerCase()
+
+if(!femaleVoice && name.includes("female")) femaleVoice=v
+if(!maleVoice && name.includes("male")) maleVoice=v
+
+})
+
+if(!femaleVoice && voices[0]) femaleVoice=voices[0]
+if(!maleVoice && voices[1]) maleVoice=voices[1]
+
+}
+
+speechSynthesis.onvoiceschanged=loadVoices
+
+loadVoices()
 
 function speak(text){
-
-if(!text)return
 
 let words=text.split(" ")
 
@@ -124,9 +159,16 @@ let i=0
 
 function speakWord(){
 
-if(i>=words.length)return
+if(i>=words.length) return
 
-let utter=new SpeechSynthesisUtterance(flarPronounce(words[i]))
+let word=flarPronounce(words[i])
+
+let utter=new SpeechSynthesisUtterance(word)
+
+let voiceType=document.getElementById("voiceSelect").value
+
+if(voiceType==="male") utter.voice=maleVoice
+else utter.voice=femaleVoice
 
 utter.lang="nl-NL"
 
@@ -145,10 +187,5 @@ speakWord()
 
 }
 
-document.getElementById("speakInputBtn").onclick=()=>{
-speak(input.value)
-}
-
-document.getElementById("speakOutputBtn").onclick=()=>{
-speak(output.value)
-}
+speakInputBtn.onclick=()=>speak(input.value)
+speakOutputBtn.onclick=()=>speak(output.value)
