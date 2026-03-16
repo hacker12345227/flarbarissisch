@@ -6,18 +6,23 @@ let mode = "nl-flar"
 const input = document.getElementById("input")
 const output = document.getElementById("output")
 const autocomplete = document.getElementById("autocomplete")
+const copyBtn = document.getElementById("copyBtn")
+
+/* dictionary laden */
 
 fetch("dictionary.json")
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
-dictionary=data
+dictionary = data
 
 for(let key in dictionary){
 reverseDictionary[dictionary[key]] = key
 }
 
 })
+
+/* tekst normaliseren */
 
 function normalize(text){
 
@@ -27,16 +32,18 @@ return text
 
 }
 
+/* vertalen */
+
 function translate(){
 
 let words = normalize(input.value).split(/\s+/)
 
 let result
 
-if(mode==="nl-flar"){
-result = words.map(w=>dictionary[w]||w)
+if(mode === "nl-flar"){
+result = words.map(w => dictionary[w] || w)
 }else{
-result = words.map(w=>reverseDictionary[w]||w)
+result = words.map(w => reverseDictionary[w] || w)
 }
 
 output.value = result.join(" ")
@@ -45,7 +52,9 @@ showAutocomplete(words[words.length-1])
 
 }
 
-input.addEventListener("input",translate)
+input.addEventListener("input", translate)
+
+/* autocomplete */
 
 function showAutocomplete(part){
 
@@ -55,24 +64,25 @@ if(!part) return
 
 let keys = Object.keys(dictionary)
 
-let matches = keys.filter(w=>w.startsWith(part)).slice(0,5)
+let matches = keys.filter(w => w.startsWith(part)).slice(0,5)
 
-if(matches.length===0) return
+if(matches.length === 0) return
 
 autocomplete.classList.add("show")
 
-matches.forEach(word=>{
+matches.forEach(word => {
 
-let div=document.createElement("div")
-div.className="autocomplete-item"
-div.innerText=word
+let div = document.createElement("div")
 
-div.onclick=()=>{
+div.className = "autocomplete-item"
+div.innerText = word
 
-let words=input.value.split(/\s+/)
-words[words.length-1]=word
+div.onclick = () => {
 
-input.value=words.join(" ")
+let words = input.value.split(/\s+/)
+words[words.length-1] = word
+
+input.value = words.join(" ")
 
 autocomplete.classList.remove("show")
 
@@ -86,17 +96,19 @@ autocomplete.appendChild(div)
 
 }
 
-document.addEventListener("click",e=>{
+document.addEventListener("click",e => {
 
-if(!autocomplete.contains(e.target) && e.target!==input){
+if(!autocomplete.contains(e.target) && e.target !== input){
 autocomplete.classList.remove("show")
 }
 
 })
 
+/* switch knop */
+
 document.getElementById("switchBtn").addEventListener("click",()=>{
 
-let btn=document.getElementById("switchBtn")
+let btn = document.getElementById("switchBtn")
 
 btn.classList.add("rotate")
 setTimeout(()=>btn.classList.remove("rotate"),300)
@@ -121,19 +133,32 @@ translate()
 
 })
 
-document.getElementById("copyBtn").addEventListener("click",()=>{
+/* copy knop met animatie */
 
-let text=output.value
+copyBtn.addEventListener("click",()=>{
 
-if(navigator.clipboard){
+let text = output.value
+
+if(!text) return
+
 navigator.clipboard.writeText(text)
-}
+
+copyBtn.innerText = "✅ Gekopieerd"
+
+copyBtn.classList.add("copied")
+
+setTimeout(()=>{
+
+copyBtn.innerText = "📋 Copy"
+copyBtn.classList.remove("copied")
+
+},1500)
 
 })
 
 /* dark mode */
 
-const themeToggle=document.getElementById("themeToggle")
+const themeToggle = document.getElementById("themeToggle")
 
 function setTheme(theme){
 
@@ -145,7 +170,7 @@ themeToggle.innerText = theme==="dark" ? "☀️" : "🌙"
 
 }
 
-const savedTheme=localStorage.getItem("theme")
+const savedTheme = localStorage.getItem("theme")
 
 if(savedTheme){
 setTheme(savedTheme)
@@ -155,33 +180,58 @@ setTheme("light")
 
 themeToggle.addEventListener("click",()=>{
 
-const current=document.documentElement.getAttribute("data-theme")
+const current = document.documentElement.getAttribute("data-theme")
 
 setTheme(current==="dark" ? "light":"dark")
 
 })
 
-/* speech */
+/* spraak */
 
-let voices=[]
-const voiceSelect=document.getElementById("voiceSelect")
+let voices = []
+
+const voiceSelect = document.getElementById("voiceSelect")
 
 function loadVoices(){
 
-voices = speechSynthesis.getVoices()
+let allVoices = speechSynthesis.getVoices()
 
-voiceSelect.innerHTML=""
+/* alleen nederlandse stemmen */
 
-voices.forEach((voice,i)=>{
+let nlVoices = allVoices.filter(v => v.lang.startsWith("nl"))
 
-let option=document.createElement("option")
+/* man en vrouw detectie */
 
-option.value=i
-option.textContent=voice.name+" ("+voice.lang+")"
+let male = nlVoices.find(v => v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("david"))
+let female = nlVoices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira"))
+
+voices = []
+
+voiceSelect.innerHTML = ""
+
+if(male){
+
+voices.push(male)
+
+let option = document.createElement("option")
+option.value = 0
+option.textContent = "Man"
 
 voiceSelect.appendChild(option)
 
-})
+}
+
+if(female){
+
+voices.push(female)
+
+let option = document.createElement("option")
+option.value = voices.length-1
+option.textContent = "Vrouw"
+
+voiceSelect.appendChild(option)
+
+}
 
 }
 
@@ -199,9 +249,13 @@ if(voices[voiceIndex]){
 utter.voice = voices[voiceIndex]
 }
 
+utter.lang = "nl-NL"
+
 speechSynthesis.speak(utter)
 
 }
+
+/* luister knoppen */
 
 document.getElementById("speakInputBtn").addEventListener("click",()=>{
 speak(input.value)
