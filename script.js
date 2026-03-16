@@ -183,18 +183,58 @@ setTheme(current==="dark" ? "light" : "dark")
 })
 
 
-document.getElementById("speakBtn").addEventListener("click",()=>{
+let voices = []
 
-let text=document.getElementById("output").value
+const voiceSelect = document.getElementById("voiceSelect")
+
+function loadVoices(){
+
+voices = speechSynthesis.getVoices()
+
+voiceSelect.innerHTML = ""
+
+voices.forEach((voice,i)=>{
+
+let option = document.createElement("option")
+
+option.value = i
+option.textContent = voice.name + " (" + voice.lang + ")"
+
+voiceSelect.appendChild(option)
+
+})
+
+}
+
+speechSynthesis.onvoiceschanged = loadVoices
+
+function speak(text){
 
 if(!text) return
 
-let speech=new SpeechSynthesisUtterance(text)
+let utter = new SpeechSynthesisUtterance(text)
 
-speech.lang="en-US"   // beste voor fantasy talen
-speech.rate=0.9
-speech.pitch=1
+let voiceIndex = voiceSelect.value
 
-speechSynthesis.speak(speech)
+if(voices[voiceIndex]){
+utter.voice = voices[voiceIndex]
+}
+
+utter.rate = 0.9
+utter.pitch = 1
+
+speechSynthesis.speak(utter)
+
+}
+
+document.getElementById("speakInputBtn").addEventListener("click",()=>{
+
+speak(document.getElementById("input").value)
+
+})
+
+document.getElementById("speakOutputBtn").addEventListener("click",()=>{
+
+speak(document.getElementById("output").value)
 
 })
