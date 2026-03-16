@@ -1,123 +1,187 @@
-let dictionary = {}
-let reverseDictionary = {}
+let dictionary = {};
+let reverseDictionary = {};
+let mode = "nl-flar";
 
-let mode = "nl-flar"
+const inputEl = document.getElementById("input");
+const outputEl = document.getElementById("output");
+const autocompleteEl = document.getElementById("autocomplete");
+const switchBtn = document.getElementById("switchBtn");
+const copyBtn = document.getElementById("copyBtn");
+const langLeft = document.getElementById("langLeft");
+const langRight = document.getElementById("langRight");
 
 fetch("dictionary.json")
-.then(res => res.json())
-.then(data => {
+  .then((res) => res.json())
+  .then((data) => {
+    dictionary = data;
 
-dictionary = data
+    for (const key in dictionary) {
+      reverseDictionary[dictionary[key]] = key;
+    }
 
-for(let key in dictionary){
-reverseDictionary[dictionary[key]] = key
+    translate();
+  })
+  .catch((err) => {
+    console.error("Kon dictionary.json niet laden:", err);
+  });
+
+function normalize(text) {
+  return text.toLowerCase().replace(/[.,!?;:()"'`]/g, "");
 }
 
-})
-
-function normalize(text){
-
-return text
-.toLowerCase()
-.replace(/[.,!?]/g,"")
-
+function getActiveDictionary() {
+  return mode === "nl-flar" ? dictionary : reverseDictionary;
 }
 
-function translate(){
-
-let input = normalize(document.getElementById("input").value)
-
-let words = input.split(/\s+/)
-
-let result
-
-if(mode === "nl-flar"){
-result = words.map(word => dictionary[word] || word)
-}
-else{
-result = words.map(word => reverseDictionary[word] || word)
+function translateWords(words) {
+  const activeDictionary = getActiveDictionary();
+  return words.map((word) => activeDictionary[word] || word);
 }
 
-document.getElementById("output").value = result.join(" ")
+function translate() {
+  const rawInput = inputEl.value;
+  const cleaned = normalize(rawInput).trim();
 
-autocomplete(words[words.length-1])
+  if (!cleaned) {
+    outputEl.value = "";
+    hideAutocomplete();
+    return;
+  }
 
+  const words = cleaned.split(/\s+/);
+  const translated = translateWords(words);
+  outputEl.value = translated.join(" ");
+
+  const currentPartial = getCurrentPartial(rawInput);
+  showAutocomplete(currentPartial);
 }
 
-document.getElementById("input").addEventListener("input", translate)
-
-function autocomplete(part){
-
-let list = document.getElementById("autocomplete")
-
-list.innerHTML = ""
-
-if(!part) return
-
-let keys = Object.keys(dictionary)
-
-let matches = keys.filter(w => w.startsWith(part)).slice(0,5)
-
-matches.forEach(word => {
-
-let div = document.createElement("div")
-div.className = "autocomplete-item"
-div.innerText = word
-
-div.onclick = () => {
-
-let input = document.getElementById("input")
-let words = input.value.split(/\s+/)
-
-words[words.length-1] = word
-
-input.value = words.join(" ")
-
-list.innerHTML = ""
-
-translate()
-
+function getCurrentPartial(text) {
+  const match = text.toLowerCase().match(/([^\s]+)$/);
+  if (!match) return "";
+  return match[1].replace(/[.,!?;:()"'`]/g, "");
 }
 
-list.appendChild(div)
+function showAutocomplete(partial) {
+  const activeDictionary = getActiveDictionary();
+  autocompleteEl.innerHTML = "";
 
-})
+  if (!partial || partial.length < 1) {
+    hideAutocomplete();
+    return;
+  }
 
+  const keys = Object.keys(activeDictionary)
+    .filter((word) => word.startsWith(partial))
+    .slice(0, 6);
+
+  if (keys.length === 0) {
+    hideAutocomplete();
+    return;
+  }
+
+  keys.forEach((word) => {
+    const item = document.createElement("div");
+    item.className = "autocomplete-item";
+    item.textContent = word;
+
+    item.addEventListener("click", () => {
+      applySuggestion(word);
+    });
+
+    autocompleteEl.appendChild(item);
+  });
+
+  autocompleteEl.classList.add("show");
 }
 
-document.getElementById("switchBtn").addEventListener("click", () => {
-
-let btn = document.getElementById("switchBtn")
-
-btn.classList.add("switching")
-
-setTimeout(() => btn.classList.remove("switching"),400)
-
-if(mode === "nl-flar"){
-
-mode = "flar-nl"
-
-document.getElementById("langLeft").innerText = "Flarbarissisch"
-document.getElementById("langRight").innerText = "Nederlands"
-
-}
-else{
-
-mode = "nl-flar"
-
-document.getElementById("langLeft").innerText = "Nederlands"
-document.getElementById("langRight").innerText = "Flarbarissisch"
-
+function hideAutocomplete() {
+  autocompleteEl.classList.remove("show");
+  autocompleteEl.innerHTML = "";
 }
 
-translate()
+function applySuggestion(selectedWord) {
+  const current = inputEl.value;
+  const replaced = current.replace(/([^\s]*)$/, selectedWord);
+  inputEl.value = replaced.endsWith(" ") ? replaced : replaced + " ";
+  inputEl.focus();
+  hideAutocomplete();
+  translate();
+}
 
-})
+inputEl.addEventListener("input", translate);
 
-document.getElementById("copyBtn").addEventListener("click", () => {
+inputEl.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    hideAutocomplete();
+  }
+});
 
-let text = document.getElementById("output")
+document.addEventListener("click", (event) => {
+  const clickedInsideInput = event.target === inputEl;
+  const clickedInsideAutocomplete = autocompleteEl.contains(event.target);
 
-navigator.clipboard.writeText(text.value)
+  if (!clickedInsideInput && !clickedInsideAutocomplete) {
+    hideAutocomplete();
+  }
+});
 
-})
+switchBtn.addEventListener("click", () => {
+  switchBtn.classList.add("rotating");
+  setTimeout(() => switchBtn.classList.remove("rotating"), 350);
+
+  const oldInput = inputEl.value;
+  const oldOutput = outputEl.value;
+
+  if (mode === "nl-flar") {
+    mode = "flar-nl";
+    langLeft.textContent = "Flarbarissisch";
+    langRight.textContent = "Nederlands";
+  } else {
+    mode = "nl-flar";
+    langLeft.textContent = "Nederlands";
+    langRight.textContent = "Flarbarissisch";
+  }
+
+  inputEl.value = oldOutput;
+  outputEl.value = oldInput ? normalize(oldInput) : "";
+  translate();
+});
+
+copyBtn.addEventListener("click", async () => {
+  const text = outputEl.value;
+
+  if (!text) return;
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      fallbackCopyText(text);
+    }
+
+    const original = copyBtn.textContent;
+    copyBtn.textContent = "✅ Gekopieerd";
+    copyBtn.classList.add("copied");
+
+    setTimeout(() => {
+      copyBtn.textContent = original;
+      copyBtn.classList.remove("copied");
+    }, 1400);
+  } catch (error) {
+    console.error("Kopiëren mislukt:", error);
+    alert("Kopiëren lukte niet.");
+  }
+});
+
+function fallbackCopyText(text) {
+  const temp = document.createElement("textarea");
+  temp.value = text;
+  temp.setAttribute("readonly", "");
+  temp.style.position = "absolute";
+  temp.style.left = "-9999px";
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand("copy");
+  document.body.removeChild(temp);
+}
